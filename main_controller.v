@@ -5,7 +5,7 @@ module main_controller(
     input ack,                  // ack for making a valid move
     input clock,
     input reset,
-    output reg new_move,        // enable datapath controller
+    output reg new_move,        // enable new move controller
     output reg init_start,      // start initialization
     output reg player           // 0 when wait black, 1 white
 );

@@ -16,7 +16,6 @@ module datapath(
     // white:   2'b10
     // wall:    2'b11
     input write_to_mem,                 // write to memory
-    input read_fr_mem,                  // data got from memory
     output reg [6:0] addr_to_mem,       // address to the memory
     output reg [1:0] data_to_mem,       // data to be sent
     output reg wren,                    // write enable
@@ -25,7 +24,6 @@ module datapath(
     // ------ vd ctl ------
     input mv_valid_in,
     output reg [6:0] s_addr_out,
-    output reg done_out,
     output reg ack                      // acknowledge valid move
     // --------------------
 );

@@ -1,5 +1,5 @@
 module nm_controller(
-    input new_move,             // new move signal
+    input enable,                   // new move signal
     input clock,
     input reset,
     input s_done,
@@ -32,7 +32,7 @@ localparam  S_WAIT_MOVE         = 4'b8,
 always @(*)
 begin: state_table 
     case (current_state)
-        S_WAIT_MOVE:  next_state = new_move ? S_DP_LOAD : S_WAIT_MOVE;
+        S_WAIT_MOVE:  next_state = enable ? S_DP_LOAD : S_WAIT_MOVE;
         S_DP_LOAD: next_state = S_VALIDATE_U;
         S_VALIDATE_U:  next_state = s_done ? S_VALIDATE_D : S_VALIDATE_U;
         S_VALIDATE_D:  next_state = s_done ? S_VALIDATE_L : S_VALIDATE_D;
@@ -55,4 +55,4 @@ begin: state_FFs
         current_state <= next_state;
 end // state_FFS
 
-endmodule // dp_controller
+endmodule // New Move Controller
