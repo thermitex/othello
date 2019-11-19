@@ -1,22 +1,22 @@
-module controller(
+module main_controller(
     input go,                   // start the game
-    input game_end,             // game ends (from datapath)
+    input game_end,             // game ends
+    input init_end,             // initialization ends
     input ack,                  // ack for making a valid move
     input clock,
     input reset,
-    output reg enable,          // enable datapath
+    output reg new_move,        // enable datapath controller
+    output reg init_start,      // start initialization
     output reg player           // 0 when wait black, 1 white
 );
 
 reg [2:0] current_state, next_state;
 
-wire init_start, init_done;
-
-localparam  S_GAME_WELC         = 2'd0,
-            S_GAME_WELC_WAIT    = 2'b1;
-            S_GAME_INIT         = 3'b2
-            S_WAIT_BLACK        = 3'd3,
-            S_WAIT_WHITE        = 3'd4,
+localparam  S_GAME_WELC         = 3'b0,
+            S_GAME_WELC_WAIT    = 3'b1,
+            S_GAME_INIT         = 3'b2,
+            S_WAIT_BLACK        = 3'b3,
+            S_WAIT_WHITE        = 3'b4;
 
 always @(*)
 begin: state_table 
@@ -54,4 +54,4 @@ begin: state_FFs
         current_state <= next_state;
 end // state_FFS
 
-endmodule // controller
+endmodule // main_controller
