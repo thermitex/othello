@@ -1,2 +1,5 @@
-# othello
-Othello game written in Verilog
+# Othello (Verilog Version)
+
+Othello game written in Verilog.
+
+- (Under Construction)
