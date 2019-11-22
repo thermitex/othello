@@ -1,13 +1,13 @@
 module validator(
-    input clock,
-    input reset,
-    input [6:0] s_addr_in,
-    input player,
-    input [3:0] step_in,
-    input ld,
-    input enable;
-    output reg dir_status_o,
-    output reg s_done_o
+    input clock,                    // <- clock (main_controller)
+    input reset,                    // <- reset
+    input [6:0] s_addr_in,          // <- s_addr_out (datapath)
+    input player,                   // <- player (main_controller)
+    input [3:0] step_in,            // <- step_o (nm_controller)
+    input ld,                       // <- ld_o (nm_controller)
+    input enable;                   // <- start_vali (nm_controller)
+    output reg dir_status_o,        // -> dir_status_in (nm_controller)
+    output reg s_done_o             // -> s_done (nm_controller)
 );
 
 reg [6:0] addr;
@@ -49,7 +49,7 @@ begin: do_stuff
             s_done_o = 0;
         end
         S_VALIDATING: begin
-            // get value from ram
+            // TODO: get value from ram
             if (player == 1'b0) begin
                 // black move, detect white ones
                 if (data == 2'b10)

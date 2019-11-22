@@ -1,17 +1,16 @@
 module nm_controller(
-    input enable,                   // new move signal
-    input clock,
-    input reset,
-    input s_done,
-    input dir_status_in,
-    output reg ld_e_addr_o,
-    // output reg ld_i_addr,
-    output reg ld_data_p_o,
-    // output reg ld_data,
-    output reg write_to_mem_o
-    output reg step_o,
-    output reg ld_o,
-    output reg mv_valid_o
+    input enable,                   // <- new_move (main_controller)
+    input clock,                    // <- CLOCK_50
+    input reset,                    // <- reset
+    input s_done,                   // <- s_done_o (validator)
+    input dir_status_in,            // <- dir_status_o (validator)
+    output reg ld_e_addr_o,         // -> ld_e_addr (datapath)
+    output reg ld_data_p_o,         // -> ld_data_p (datapath)
+    output reg write_to_mem_o       // -> write_to_mem (datapath)
+    output reg step_o,              // -> step_in (validator)
+    output reg ld_o,                // -> ld (validator)
+    output reg mv_valid_o           // -> mv_valid_in (datapath)
+    output reg start_vali           // -> enable (validator)
 );
 
 reg [3:0] current_state, next_state;
@@ -51,10 +50,12 @@ begin: state_table
     endcase
 end // state_table
 
+always @(*)
 begin: enable_signals
     case (current_state)
         S_WAIT_MOVE: begin
             mv_valid_o = 0;
+            write_to_mem_o = 0;
         end
         S_DP_LOAD: begin
             ld_data_p_o = 1;    // -> ld_data_p
@@ -63,45 +64,57 @@ begin: enable_signals
         S_VALIDATE_U_S: begin
             step_o = -10;
             ld_o = 1;
-            enable = 1;
+            start_vali = 1;
         end
         S_VALIDATE_U: begin
-            enable = 0;
+            start_vali = 0;
+            if (s_done)
+                dir_status[3] <= dir_status_in;
         end
         S_VALIDATE_D_S: begin
             step_o = 10;
             ld_o = 1;
-            enable = 1;
+            start_vali = 1;
         end
         S_VALIDATE_D: begin
-            enable = 0;
+            start_vali = 0;
+            if (s_done)
+                dir_status[2] <= dir_status_in;
         end
         S_VALIDATE_L_S: begin
             step_o = -1;
             ld_o = 1;
-            enable = 1;
+            start_vali = 1;
         end
         S_VALIDATE_L: begin
-            enable = 0;
+            start_vali = 0;
+            if (s_done)
+                dir_status[1] <= dir_status_in;
         end
         S_VALIDATE_R_S: begin
             step_o = 1;
             ld_o = 1;
-            enable = 1;
+            start_vali = 1;
         end
         S_VALIDATE_R: begin
-            enable = 0;
+            start_vali = 0;
+            if (s_done)
+                dir_status[0] <= dir_status_in;
         end
         S_FINAL: begin
-            mv_valid_o = 1;
+            if (dir_status[3] | dir_status[2] | dir_status[1] | dir_status[0]) begin
+                mv_valid_o = 1;
+                write_to_mem_o = 1;
+            end
         end
-        default: enable = 0;
+        default: start_vali = 0;
     endcase
 end // enable_signals
 
 always @(posedge clock)
 begin: state_FFs
     if(!reset)
+        dir_status <= 4'b0;
         current_state <= S_WAIT_MOVE;
     else
         current_state <= next_state;

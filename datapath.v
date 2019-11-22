@@ -58,6 +58,17 @@ always @(posedge clock) begin
     end
 end
 
+// TODO: Write to ram
+always @(posedge clock) begin
+    if (!reset)
+
+    else begin
+        if (write_to_mem) begin
+            
+        end
+    end
+end
+
 // ack out
 always @(posedge clock) begin
     if (!reset)
