@@ -1,0 +1,5 @@
+module othello(
+    
+);
+
+endmodule // othello

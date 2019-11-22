@@ -7,7 +7,7 @@ module nm_controller(
     output reg ld_e_addr_o,         // -> ld_e_addr (datapath)
     output reg ld_data_p_o,         // -> ld_data_p (datapath)
     output reg write_to_mem_o       // -> write_to_mem (datapath)
-    output reg step_o,              // -> step_in (validator)
+    output reg [3:0] step_o,        // -> step_in (validator)
     output reg ld_o,                // -> ld (validator)
     output reg mv_valid_o           // -> mv_valid_in (datapath)
     output reg start_vali           // -> enable (validator)
@@ -26,7 +26,7 @@ localparam  S_WAIT_MOVE         = 4'b8,
             S_VALIDATE_L_S      = 4'b6,
             S_VALIDATE_R_S      = 4'b7,
             S_FINAL             = 4'b9,
-            S_DP_LOAD           = 4'b10;
+            S_DP_LOAD           = 4'b1010;
 
 always @(*)
 begin: state_table 
