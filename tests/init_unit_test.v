@@ -1,3 +1,33 @@
+`timescale 1ns / 1ns
+
+module init_test(
+    input [9:0] SW,
+    input [3:0] KEY,
+    output [9:0] LEDR;
+);
+
+wire [7:0] addr_mem;
+wire [1:0] data_mem;
+wire wren_mem;
+
+reg CLOCK_50;
+
+initial CLOCK_50 = 1'b0;
+
+initializer i0 (
+    .clock(CLOCK_50),
+    .reset(~KEY[0]),
+    .start(~KEY[1]),
+    .done(LEDR[0]),
+    .addr(addr_mem),
+    .data(data_mem),
+    .wren(wren_mem)
+);
+
+always #1 CLOCK_50 = ~CLOCK_50;
+
+endmodule // init_test
+
 module initializer(
     input clock,
     input reset,

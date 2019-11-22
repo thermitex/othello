@@ -1,8 +1,22 @@
 module validator_test(
-    input SW[9:0],
+    input [9:0 SW,
     input [3:0] KEY,
     input CLOCK_50,
-    output [9:0] LEDR;
+    output [9:0] LEDR
+);
+
+wire [7:0] addr_mem;
+wire [1:0] data_mem;
+wire wren_mem;
+
+initializer i0 (
+    .clock(CLOCK_50),
+    .reset(~KEY[0]),
+    .start(~KEY[1]),
+    .done(LEDR[0]),
+    .addr(addr_mem),
+    .data(data_mem),
+    .wren(wren_mem)
 );
 
 validator v0 (
