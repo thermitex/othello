@@ -3,11 +3,14 @@ module validator(
     input reset,                    // <- reset
     input [6:0] s_addr_in,          // <- s_addr_out (datapath)
     input player,                   // <- player (main_controller)
-    input [3:0] step_in,            // <- step_o (nm_controller)
+    input [4:0] step_in,            // <- step_o (nm_controller)
     input ld,                       // <- ld_o (nm_controller)
     input enable;                   // <- start_vali (nm_controller)
     output reg dir_status_o,        // -> dir_status_in (nm_controller)
     output reg s_done_o             // -> s_done (nm_controller)
+    output reg addr_out,
+    output reg wren_o,
+    input [1:0] data_in
 );
 
 reg [6:0] addr;
@@ -16,12 +19,13 @@ reg [1:0] data;
 reg count;
 
 // validator states
-reg [1:0] current_state, next_state;
+reg [2:0] current_state, next_state;
 
-localparam  S_WAIT_EN           = 2'b0,
-            S_VALIDATING        = 2'b1,
-            S_VALI_SUCC         = 2'b2,
-            S_VALI_FAIL         = 2'b3,
+localparam  S_WAIT_EN           = 3'b0,
+            S_VALIDATING_S      = 3'b4,
+            S_VALIDATING        = 3'b1,
+            S_VALI_SUCC         = 3'b2,
+            S_VALI_FAIL         = 3'b3,
 
 // load
 always @(posedge clock) begin
@@ -43,13 +47,18 @@ always @(posedge clock)
 begin: do_stuff
     case (current_state)
         S_WAIT_EN: begin
-            next_state = enable ? S_VALIDATING : S_WAIT_EN;
+            next_state = enable ? S_VALIDATING_S : S_WAIT_EN;
             count <= 0;
             dir_status_o = 0;
             s_done_o = 0;
         end
+        S_VALIDATING_S: begin
+            next_state = S_VALIDATING;
+            addr_out = addr;
+        end
         S_VALIDATING: begin
             // TODO: get value from ram
+            data = data_in;
             if (player == 1'b0) begin
                 // black move, detect white ones
                 if (data == 2'b10)
@@ -78,6 +87,8 @@ begin: do_stuff
             end
             count <= count + 1;
             addr <= addr + step;
+            addr_out = addr + step;
+            wren_o = 0;
         end
         S_VALI_FAIL: begin
             dir_status_o = 0;
