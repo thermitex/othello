@@ -43,6 +43,7 @@ begin: enable_signals
             init_start = 1;
         end
         S_WAIT_BLACK: begin
+            init_start = 0;
             new_move = 0;
             player = 0;
         end
