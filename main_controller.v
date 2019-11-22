@@ -14,7 +14,9 @@ reg [2:0] current_state, next_state;
 
 localparam  S_GAME_WELC         = 3'b0,
             S_WB_WAIT           = 3'b1,
+            S_WB_VALI_WAIT      = 3'b6,
             S_WW_WAIT           = 3'b5,
+            S_WW_VALI_WAIT      = 3'b7,
             S_GAME_INIT         = 3'b2,
             S_WAIT_BLACK        = 3'b3,
             S_WAIT_WHITE        = 3'b4;
@@ -24,10 +26,12 @@ begin: state_table
     case (current_state)
         S_GAME_WELC:  next_state = go ? S_GAME_INIT : S_GAME_WELC;
         S_GAME_INIT: next_state = init_done ？ S_WAIT_BLACK : S_GAME_INIT；
-        S_WAIT_BLACK: next_state = ack ? S_WB_WAIT : S_WAIT_BLACK; 
-        S_WB_WAIT: next_state = ack ? S_WB_WAIT : S_WAIT_WHITE;
-        S_WAIT_WHITE: next_state = ack ? S_WW_WAIT : S_WAIT_WHITE;
-        S_WW_WAIT: next_state = ack ? S_WW_WAIT : S_WAIT_BLACK;
+        S_WAIT_BLACK: next_state = go ? S_WB_WAIT : S_WAIT_BLACK; 
+        S_WB_WAIT: next_state = go ? S_WB_WAIT : S_WB_VALI_WAIT;
+        S_WB_VALI_WAIT: next_state = ack ? S_WAIT_WHITE : S_WB_VALI_WAIT;
+        S_WAIT_WHITE: next_state = go ? S_WW_WAIT : S_WAIT_WHITE;
+        S_WW_WAIT: next_state = go ? S_WW_WAIT : S_WW_VALI_WAIT;
+        S_WW_VALI_WAIT: next_state = ack ? S_WAIT_BLACK : S_WW_VALI_WAIT;
         default:      next_state = S_GAME_WELC;
     endcase
 end // state_table
@@ -39,9 +43,19 @@ begin: enable_signals
             init_start = 1;
         end
         S_WAIT_BLACK: begin
+            new_move = 0;
+            player = 0;
+        end
+        S_WB_VALI_WAIT: begin
+            new_move = 1;
             player = 0;
         end
         S_WAIT_WHITE: begin
+            new_move = 0;
+            player = 1;
+        end
+        S_WW_VALI_WAIT: begin
+            new_move = 1;
             player = 1;
         end
         default: player = 0;

@@ -32,31 +32,18 @@ always @(posedge clock) begin
     end
     else begin
         if (ld) begin
-            addr <= s_addr_in;
+            addr <= s_addr_in + step;
             step <= step_in;
             data <= player ? 2'b10 : 2'b01;
         end
     end
 end
 
-always @(posedge clock) begin
-    if (enable)
-        addr <= addr + step;
-    
-
-end
-
 always @(posedge clock)
 begin: do_stuff
     case (current_state)
         S_WAIT_EN: begin
-            if (enable) begin
-                next_state = S_VALIDATING;
-                addr <= addr + step;
-            end
-            else begin
-                next_state = S_WAIT_EN;
-            end
+            next_state = enable ? S_VALIDATING : S_WAIT_EN;
             count <= 0;
             dir_status_o = 0;
             s_done_o = 0;
