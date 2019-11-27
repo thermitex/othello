@@ -16,16 +16,16 @@ module nm_controller(
 reg [3:0] current_state, next_state;
 reg [3:0] dir_status;
 
-localparam  S_WAIT_MOVE         = 4'b8,
-            S_VALIDATE_U        = 4'b0,
-            S_VALIDATE_D        = 4'b1,
-            S_VALIDATE_L        = 4'b2,
-            S_VALIDATE_R        = 4'b3,
-            S_VALIDATE_U_S      = 4'b4,
-            S_VALIDATE_D_S      = 4'b5,
-            S_VALIDATE_L_S      = 4'b6,
-            S_VALIDATE_R_S      = 4'b7,
-            S_FINAL             = 4'b9,
+localparam  S_WAIT_MOVE         = 4'b0,
+            S_VALIDATE_U        = 4'b1,
+            S_VALIDATE_D        = 4'b10,
+            S_VALIDATE_L        = 4'b11,
+            S_VALIDATE_R        = 4'b100,
+            S_VALIDATE_U_S      = 4'b101,
+            S_VALIDATE_D_S      = 4'b110,
+            S_VALIDATE_L_S      = 4'b111,
+            S_VALIDATE_R_S      = 4'b1000,
+            S_FINAL             = 4'b1001,
             S_DP_LOAD           = 4'b1010;
 
 always @(*)

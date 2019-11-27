@@ -14,12 +14,12 @@ reg [2:0] current_state, next_state;
 
 localparam  S_GAME_WELC         = 3'b0,
             S_WB_WAIT           = 3'b1,
-            S_WB_VALI_WAIT      = 3'b6,
-            S_WW_WAIT           = 3'b5,
-            S_WW_VALI_WAIT      = 3'b7,
-            S_GAME_INIT         = 3'b2,
-            S_WAIT_BLACK        = 3'b3,
-            S_WAIT_WHITE        = 3'b4;
+            S_WB_VALI_WAIT      = 3'b10,
+            S_WW_WAIT           = 3'b11,
+            S_WW_VALI_WAIT      = 3'b100,
+            S_GAME_INIT         = 3'b101,
+            S_WAIT_BLACK        = 3'b110,
+            S_WAIT_WHITE        = 3'b111;
 
 always @(*)
 begin: state_table 
