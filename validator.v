@@ -23,6 +23,7 @@ reg [2:0] current_state, next_state;
 
 localparam  S_WAIT_EN           = 3'b0,
             S_VALIDATING_S      = 3'b01,
+            S_VALIDATING_CD     = 3'b111,
             S_VALIDATING        = 3'b10,
             S_VALI_SUCC         = 3'b11,
             S_VALI_FAIL         = 3'b100;
@@ -38,7 +39,7 @@ begin: do_stuff
             end
             else begin
                 if (ld) begin
-                    addr <= s_addr_in + step;
+                    addr <= s_addr_in;
                     step <= step_in;
                     data <= player ? 2'b10 : 2'b01;
                 end
@@ -49,8 +50,18 @@ begin: do_stuff
             s_done_o = 0;
         end
         S_VALIDATING_S: begin
-            next_state = S_VALIDATING;
+            next_state = S_VALIDATING_CD;
             addr_out = addr;
+            wren_o = 0;
+        end
+        // check duplicate move
+        S_VALIDATING_CD: begin
+            if (data_in == 2'b00)
+                next_state = S_VALIDATING;
+            else
+                next_state = S_VALI_FAIL;
+            addr <= addr + step;
+            addr_out = addr + step;
         end
         S_VALIDATING: begin
             data = data_in;
