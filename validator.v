@@ -4,7 +4,7 @@ module validator(
     input [6:0] s_addr_in,          // <- s_addr_out (datapath)
     input player,                   // <- player (main_controller)
     input [4:0] step_in,            // <- step_o (nm_controller)
-    input ld,                       // <- ld_o (nm_controller)
+    input ld,                       // <- ld_vali_o (nm_controller)
     input enable,                   // <- start_vali (nm_controller)
     output reg dir_status_o,        // -> dir_status_in (nm_controller)
     output reg s_done_o,            // -> s_done (nm_controller)
@@ -46,7 +46,7 @@ begin: do_stuff
                 end
             end
             next_state = enable ? S_VALIDATING_S : S_WAIT_EN;
-            count <= 0;
+            count <= 4'b0;
             dir_status_o = 0;
             s_done_o = 0;
             ctrl_mem = 0;

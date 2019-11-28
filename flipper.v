@@ -17,6 +17,7 @@ module flipper(
 reg [6:0] addr;
 reg [3:0] step;
 reg [1:0] data;
+reg [3:0] count;
 
 // flipper states
 reg [2:0] current_state, next_state;
@@ -39,12 +40,13 @@ begin: do_stuff
             end
             else begin
                 if (ld) begin
-                    addr <= s_addr_in + step;
+                    addr <= s_addr_in;
                     step <= step_in;
                     data <= player ? 2'b10 : 2'b01;
                 end
             end
             next_state = enable ? S_FLIPPING_S : S_WAIT_EN;
+            count <= 4'b0;
             s_done_o = 0;
             ctrl_mem = 0;
         end
@@ -58,14 +60,14 @@ begin: do_stuff
             data = data_in;
             if (player == 1'b0) begin
                 // black move, detect white ones
-                if (data == 2'b10)
+                if (data == 2'b10 || count == 4'b0)
                     next_state = S_FLIPPING_WRITE;
                 if (data == 2'b01)
                     next_state = S_FLIP_OVER;
             end
             else begin
                 // white move, detect black ones
-                if (data == 2'b01)
+                if (data == 2'b01 || count == 4'b0)
                     next_state = S_FLIPPING_WRITE;
                 if (data == 2'b10) 
                     next_state = S_FLIP_OVER;
@@ -79,8 +81,13 @@ begin: do_stuff
         S_FLIPPING_WAIT: begin
             addr <= addr + step;
             addr_out = addr + step;
+            count <= count + 1'b1;
             wren_o = 0;
             next_state = S_FLIPPING_READ;
+        end
+        S_FLIP_OVER: begin
+            s_done_o = 1;
+            next_state = S_WAIT_EN;
         end
         default: next_state = S_WAIT_EN;
     endcase
