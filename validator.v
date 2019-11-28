@@ -10,6 +10,7 @@ module validator(
     output reg s_done_o,            // -> s_done (nm_controller)
     output reg [6:0] addr_out,
     output reg wren_o,
+    output reg ctrl_mem,
     input [1:0] data_in
 );
 
@@ -48,8 +49,10 @@ begin: do_stuff
             count <= 0;
             dir_status_o = 0;
             s_done_o = 0;
+            ctrl_mem = 0;
         end
         S_VALIDATING_S: begin
+            ctrl_mem = 1;
             next_state = S_VALIDATING_CD;
             addr_out = addr;
             wren_o = 0;

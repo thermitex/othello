@@ -7,6 +7,7 @@ module main_controller(
     input reset,
     output reg new_move,        // enable new move controller
     output reg init_start,      // start initialization
+    input init_done,
     output reg player           // 0 when wait black, 1 white
 );
 

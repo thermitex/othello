@@ -9,7 +9,7 @@ module nm_controller(
     output reg write_to_mem_o       // -> write_to_mem (datapath)
     output reg [4:0] step_o,        // -> step_in (validator)
     output reg ld_o,                // -> ld (validator)
-    output reg mv_valid_o           // -> mv_valid_in (datapath)
+    output reg mv_valid_o,          // -> mv_valid_in (datapath)
     output reg start_vali           // -> enable (validator)
 );
 

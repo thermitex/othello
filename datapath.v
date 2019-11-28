@@ -37,43 +37,18 @@ reg [1:0] data;
 always @(posedge clock) begin
     if (!reset)
         addr <= 7'b0;
+        data <= 2'b0;
+        ack <= 1'b0;
     else begin
         s_addr_out <= addr;
         if (ld_e_addr)
             addr <= 11 + (addr_in >> 3) << 1 + e_addr_in;
         if (ld_i_addr)
             addr <= i_addr_in;
-    end
-end
-
-// get data to be written
-always @(posedge clock) begin
-    if (!reset)
-        data <= 2'b0;
-    else begin
         if (ld_data_p)
             data <= player ? 2'b10 : 2'b01;
         if (ld_data)
             data <= data_in;
-    end
-end
-
-// TODO: Write to ram
-always @(posedge clock) begin
-    if (!reset)
-
-    else begin
-        if (write_to_mem) begin
-            
-        end
-    end
-end
-
-// ack out
-always @(posedge clock) begin
-    if (!reset)
-        ack <= 1'b0;
-    else begin
         if (mv_valid_in)
             ack <= 1'b1;
         else
