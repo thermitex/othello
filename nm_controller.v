@@ -71,12 +71,8 @@ begin: enable_signals
         S_WAIT_MOVE: begin
             mv_valid_o = 0;
         end
-        // S_DP_LOAD: begin
-        //     ld_data_p_o = 1;    // -> ld_data_p
-        //     ld_e_addr_o = 1;    // -> ld_e_addr
-        // end
         S_VALIDATE_U_S: begin
-            step_o = -10;
+            step_o = -5'b1010;
             ld_vali_o = 1;
             start_vali = 1;
         end
@@ -86,7 +82,7 @@ begin: enable_signals
                 dir_status[3] <= dir_status_in;
         end
         S_VALIDATE_D_S: begin
-            step_o = 10;
+            step_o = 5'b1010;
             ld_vali_o = 1;
             start_vali = 1;
         end
@@ -96,7 +92,7 @@ begin: enable_signals
                 dir_status[2] <= dir_status_in;
         end
         S_VALIDATE_L_S: begin
-            step_o = -1;
+            step_o = -5'b1;
             ld_vali_o = 1;
             start_vali = 1;
         end
@@ -106,7 +102,7 @@ begin: enable_signals
                 dir_status[1] <= dir_status_in;
         end
         S_VALIDATE_R_S: begin
-            step_o = 1;
+            step_o = 5'b1;
             ld_vali_o = 1;
             start_vali = 1;
         end
@@ -116,7 +112,7 @@ begin: enable_signals
                 dir_status[0] <= dir_status_in;
         end
         S_FLIP_U_S: begin
-            step_o = -10;
+            step_o = -5'b1010;
             ld_flip_o = 1;
             start_flip = 1;
         end
@@ -124,7 +120,7 @@ begin: enable_signals
             start_flip = 0;
         end
         S_FLIP_D_S: begin
-            step_o = 10;
+            step_o = 5'b1010;
             ld_flip_o = 1;
             start_flip = 1;
         end
@@ -132,7 +128,7 @@ begin: enable_signals
             start_flip = 0;
         end
         S_FLIP_L_S: begin
-            step_o = -1;
+            step_o = -5'b1;
             ld_flip_o = 1;
             start_flip = 1;
         end
@@ -140,7 +136,7 @@ begin: enable_signals
             start_flip = 0;
         end
         S_FLIP_R_S: begin
-            step_o = 1;
+            step_o = 5'b1;
             ld_flip_o = 1;
             start_flip = 1;
         end
