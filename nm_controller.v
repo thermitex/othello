@@ -153,7 +153,10 @@ begin: enable_signals
                 write_to_mem_o = 1;
             end
         end
-        default: start_vali = 0;
+        default: begin
+            start_vali = 0;
+            start_flip = 0;
+        end
     endcase
 end // enable_signals
 
