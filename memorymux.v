@@ -26,20 +26,29 @@ always @(*) begin
         data_out = data_init;
         wren_out = wren_init;
     end
-    if (vali_ctrl) begin
-        addr_out = addr_vali;
-        data_out = data_vali;
-        wren_out = wren_vali;
-    end
-    if (flip_ctrl) begin
-        addr_out = addr_flip;
-        data_out = data_flip;
-        wren_out = wren_flip;
-    end
-    if (vga_ctrl) begin
-        addr_out = addr_vga;
-        data_out = data_vga;
-        wren_out = wren_vga;
+    else begin
+        if (vali_ctrl) begin
+            addr_out = addr_vali;
+            data_out = data_vali;
+            wren_out = wren_vali;
+        end
+        else begin
+            if (flip_ctrl) begin
+                addr_out = addr_flip;
+                data_out = data_flip;
+                wren_out = wren_flip;
+            end
+            else begin
+                if (vga_ctrl) begin
+                    addr_out = addr_vga;
+                    data_out = data_vga;
+                    wren_out = wren_vga;
+                end
+                else begin
+                    wren_out = 0;
+                end
+            end
+        end
     end
 end
 

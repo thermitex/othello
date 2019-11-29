@@ -3,6 +3,7 @@ module initializer(
     input reset,
     input start,
     output reg done,
+    output reg ctrl_mem,
     output reg [6:0] addr,
     output reg [1:0] data,
     output reg wren
@@ -17,9 +18,11 @@ always @(posedge clock) begin
         data = 2'b0;
         wren = 0;
         done = 0;
+        ctrl_mem = 0;
     end
     else begin
         if (start && counter < 7'b1100100) begin
+            ctrl_mem = 1;
             wren = 1;
             addr = counter;
             if ((counter >= 7'b0 && counter <= 7'b1010) || counter >= 7'b1011010 || counter == 7'b1010 || counter == 7'b10011 || counter == 7'b10100 || counter == 7'b11101 || counter == 7'b11110 || counter == 7'b100111 || counter == 7'b101000 || counter == 7'b110001 || counter == 7'b110010 || counter == 7'b111011 || counter == 7'b111100 || counter == 7'b1000101 || counter == 7'b1000110 || counter == 7'b1001111 || counter == 7'b1010000 || counter == 7'b1011001)
@@ -38,6 +41,7 @@ always @(posedge clock) begin
         end
         else begin
             wren = 0;
+            ctrl_mem = 0;
             if (counter >= 7'b1100100)
                 done = 1;
         end

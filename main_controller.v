@@ -1,7 +1,6 @@
 module main_controller(
     input go,                   // start the game
     input game_end,             // game ends
-    input init_end,             // initialization ends
     input ack,                  // ack for making a valid move
     input clock,
     input reset,

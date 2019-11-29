@@ -49,7 +49,6 @@ begin: do_stuff
             count <= 4'b0;
             dir_status_o = 0;
             s_done_o = 0;
-            ctrl_mem = 0;
         end
         S_VALIDATING_S: begin
             ctrl_mem = 1;
@@ -102,11 +101,13 @@ begin: do_stuff
         S_VALI_FAIL: begin
             dir_status_o = 0;
             s_done_o = 1;
+            ctrl_mem = 0;
             next_state = S_WAIT_EN;
         end
         S_VALI_SUCC: begin
             dir_status_o = 1;
             s_done_o = 1;
+            ctrl_mem = 0;
             next_state = S_WAIT_EN;
         end
         default: next_state = S_WAIT_EN;

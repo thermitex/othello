@@ -2,17 +2,18 @@ module nm_controller(
     input enable,                   // <- new_move (main_controller)
     input clock,                    // <- CLOCK_50
     input reset,                    // <- reset
-    input s_done,                   // <- s_done_o (validator)
+    input s_done_vali,              // <- s_done_o (validator)
+    input s_done_flip,              // <- s_done_o (validator)
     input dir_status_in,            // <- dir_status_o (validator)
-    output reg ld_e_addr_o,         // -> ld_e_addr (datapath)
-    output reg ld_data_p_o,         // -> ld_data_p (datapath)
-    output reg write_to_mem_o       // -> write_to_mem (datapath)
     output reg [4:0] step_o,        // -> step_in (validator)
     output reg ld_vali_o,           // -> ld (validator)
     output reg ld_flip_o,           // -> ld (flipper)
     output reg mv_valid_o,          // -> mv_valid_in (datapath)
-    output reg start_vali           // -> enable (validator)
+    output reg start_vali,          // -> enable (validator)
     output reg start_flip           // -> enable (flipper)
+    // output reg ld_e_addr_o,         // -> ld_e_addr (datapath)
+    // output reg ld_data_p_o,         // -> ld_data_p (datapath)
+    // output reg write_to_mem_o       // -> write_to_mem (datapath)
 );
 
 reg [4:0] current_state, next_state;
@@ -44,21 +45,21 @@ begin: state_table
         S_WAIT_MOVE:  next_state = enable ? S_DP_LOAD : S_WAIT_MOVE;
         S_DP_LOAD: next_state = S_VALIDATE_U;
         S_VALIDATE_U_S:  next_state = S_VALIDATE_U;
-        S_VALIDATE_U:  next_state = s_done ? S_VALIDATE_D_S : S_VALIDATE_U;
+        S_VALIDATE_U:  next_state = s_done_vali ? S_VALIDATE_D_S : S_VALIDATE_U;
         S_VALIDATE_D_S:  next_state = S_VALIDATE_D;
-        S_VALIDATE_D:  next_state = s_done ? S_VALIDATE_L_S : S_VALIDATE_D;
+        S_VALIDATE_D:  next_state = s_done_vali ? S_VALIDATE_L_S : S_VALIDATE_D;
         S_VALIDATE_L_S:  next_state = S_VALIDATE_L;
-        S_VALIDATE_L:  next_state = s_done ? S_VALIDATE_R_S : S_VALIDATE_L;
+        S_VALIDATE_L:  next_state = s_done_vali ? S_VALIDATE_R_S : S_VALIDATE_L;
         S_VALIDATE_R_S:  next_state = S_VALIDATE_R;
-        S_VALIDATE_R:  next_state = s_done ? S_FLIP_U_S : S_VALIDATE_R;
+        S_VALIDATE_R:  next_state = s_done_vali ? S_FLIP_U_S : S_VALIDATE_R;
         S_FLIP_U_S:  next_state = S_FLIP_U;
-        S_FLIP_U:  next_state = s_done ? S_FLIP_D_S : S_FLIP_U;
+        S_FLIP_U:  next_state = s_done_flip ? S_FLIP_D_S : S_FLIP_U;
         S_FLIP_D_S:  next_state = S_FLIP_D;
-        S_FLIP_D:  next_state = s_done ? S_FLIP_L_S : S_FLIP_D;
+        S_FLIP_D:  next_state = s_done_flip ? S_FLIP_L_S : S_FLIP_D;
         S_FLIP_L_S:  next_state = S_FLIP_L;
-        S_FLIP_L:  next_state = s_done ? S_FLIP_R_S : S_FLIP_L;
+        S_FLIP_L:  next_state = s_done_flip ? S_FLIP_R_S : S_FLIP_L;
         S_FLIP_R_S:  next_state = S_FLIP_R;
-        S_FLIP_R:  next_state = s_done ? S_FINAL : S_FLIP_R;
+        S_FLIP_R:  next_state = s_done_flip ? S_FINAL : S_FLIP_R;
         S_FINAL:   next_state = S_WAIT_MOVE;
         default:   next_state = S_WAIT_MOVE;
     endcase
@@ -69,12 +70,11 @@ begin: enable_signals
     case (current_state)
         S_WAIT_MOVE: begin
             mv_valid_o = 0;
-            write_to_mem_o = 0;
         end
-        S_DP_LOAD: begin
-            ld_data_p_o = 1;    // -> ld_data_p
-            ld_e_addr_o = 1;    // -> ld_e_addr
-        end
+        // S_DP_LOAD: begin
+        //     ld_data_p_o = 1;    // -> ld_data_p
+        //     ld_e_addr_o = 1;    // -> ld_e_addr
+        // end
         S_VALIDATE_U_S: begin
             step_o = -10;
             ld_vali_o = 1;
@@ -82,7 +82,7 @@ begin: enable_signals
         end
         S_VALIDATE_U: begin
             start_vali = 0;
-            if (s_done)
+            if (s_done_vali)
                 dir_status[3] <= dir_status_in;
         end
         S_VALIDATE_D_S: begin
@@ -92,7 +92,7 @@ begin: enable_signals
         end
         S_VALIDATE_D: begin
             start_vali = 0;
-            if (s_done)
+            if (s_done_vali)
                 dir_status[2] <= dir_status_in;
         end
         S_VALIDATE_L_S: begin
@@ -102,7 +102,7 @@ begin: enable_signals
         end
         S_VALIDATE_L: begin
             start_vali = 0;
-            if (s_done)
+            if (s_done_vali)
                 dir_status[1] <= dir_status_in;
         end
         S_VALIDATE_R_S: begin
@@ -112,7 +112,7 @@ begin: enable_signals
         end
         S_VALIDATE_R: begin
             start_vali = 0;
-            if (s_done)
+            if (s_done_vali)
                 dir_status[0] <= dir_status_in;
         end
         S_FLIP_U_S: begin
@@ -150,7 +150,6 @@ begin: enable_signals
         S_FINAL: begin
             if (dir_status[3] | dir_status[2] | dir_status[1] | dir_status[0]) begin
                 mv_valid_o = 1;
-                write_to_mem_o = 1;
             end
         end
         default: begin

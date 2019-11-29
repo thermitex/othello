@@ -1,7 +1,7 @@
 module flipper(
     input clock,                    // <- clock (main_controller)
     input reset,                    // <- reset
-    input [6:0] s_addr_in,          // <- s_addr_out (datapath)
+    input [6:0] s_addr_in,          
     input player,                   // <- player (main_controller)
     input [4:0] step_in,            // <- step_o (nm_controller)
     input ld,                       // <- ld_o (nm_controller)
