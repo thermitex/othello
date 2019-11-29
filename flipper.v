@@ -7,6 +7,7 @@ module flipper(
     input ld,                       // <- ld_o (nm_controller)
     input enable,                   // <- start_flip (nm_controller)
     input step_sign_in,
+    input skip_flip_in,
     output reg s_done_o,            // -> s_done (nm_controller)
     output reg [6:0] addr_out,
     output reg wren_o,
@@ -47,6 +48,8 @@ begin: do_stuff
                 end
             end
             next_state = enable ? S_FLIPPING_S : S_WAIT_EN;
+            if (enable && skip_flip_in)
+                next_state = S_FLIP_OVER;
             count <= 4'b0;
             s_done_o = 0;
             ctrl_mem = 0;

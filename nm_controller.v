@@ -7,6 +7,7 @@ module nm_controller(
     input dir_status_in,            // <- dir_status_o (validator)
     output reg [4:0] step_o,        // -> step_in (validator)
     output reg step_sign_o,
+    output reg skip_flip_o,
     output reg ld_vali_o,           // -> ld (validator)
     output reg ld_flip_o,           // -> ld (flipper)
     output reg mv_valid_o,          // -> mv_valid_in (datapath)
@@ -115,6 +116,7 @@ begin: enable_signals
                 dir_status[0] <= dir_status_in;
         end
         S_FLIP_U_S: begin
+            skip_flip_o = dir_status[3];
             step_o = 5'b1010;
             step_sign_o = 1'b1;
             ld_flip_o = 1;
@@ -124,6 +126,7 @@ begin: enable_signals
             start_flip = 0;
         end
         S_FLIP_D_S: begin
+            skip_flip_o = dir_status[2];
             step_o = 5'b1010;
             step_sign_o = 1'b0;
             ld_flip_o = 1;
@@ -133,6 +136,7 @@ begin: enable_signals
             start_flip = 0;
         end
         S_FLIP_L_S: begin
+            skip_flip_o = dir_status[1];
             step_o = 5'b1;
             step_sign_o = 1'b1;
             ld_flip_o = 1;
@@ -142,6 +146,7 @@ begin: enable_signals
             start_flip = 0;
         end
         S_FLIP_R_S: begin
+            skip_flip_o = dir_status[0];
             step_o = 5'b1;
             step_sign_o = 1'b0;
             ld_flip_o = 1;

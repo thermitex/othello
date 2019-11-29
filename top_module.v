@@ -21,6 +21,7 @@ wire enable_flip;
 wire enable_vali;
 wire nm_finish;
 wire step_sign;
+wire skip_flip;
 
 wire [6:0] addr_mem_init;
 wire [6:0] addr_mem_vali;
@@ -61,7 +62,6 @@ memorymux mm(
     .vga_ctrl(vga_mem_ctrl),
     .addr_out(addr_final),
     .data_out(data_final),
-    .step_sign_o(step_sign),
     .wren_out(wren_final)
 );
 
@@ -99,6 +99,8 @@ nm_controller nmc(
     .ld_flip_o(ld_flip),
     .nm_done_o(nm_finish),
     .mv_valid_o(valid_move),
+    .step_sign_o(step_sign),
+    .skip_flip_o(skip_flip),
     .start_vali(enable_vali),
     .start_flip(enable_flip)
 );
@@ -144,6 +146,7 @@ flipper flip(
     .wren_o(wren_mem_flip),
     .ctrl_mem(flip_mem_ctrl),
     .step_sign_in(step_sign),
+    .skip_flip_in(skip_flip),
     .data_out(data_mem_flip),
     .data_in(from_mem)
 );
