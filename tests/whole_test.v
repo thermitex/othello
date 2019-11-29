@@ -1,9 +1,15 @@
+`timescale 1ns / 1ns
+
 module othello(
     input [9:0] SW,
     input [3:0] KEY,
-    input CLOCK_50,
+    // input CLOCK_50,
     output [9:0] LEDR
 );
+
+reg CLOCK_50;
+
+initial CLOCK_50 = 1'b0;
 
 wire valid_move;
 wire enable_nmc;
@@ -143,5 +149,7 @@ flipper flip(
     .data_out(data_mem_flip),
     .data_in(from_mem)
 );
+
+always #1 CLOCK_50 = ~CLOCK_50;
 
 endmodule // othello

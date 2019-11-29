@@ -10,10 +10,8 @@ module nm_controller(
     output reg ld_flip_o,           // -> ld (flipper)
     output reg mv_valid_o,          // -> mv_valid_in (datapath)
     output reg start_vali,          // -> enable (validator)
-    output reg start_flip           // -> enable (flipper)
-    // output reg ld_e_addr_o,         // -> ld_e_addr (datapath)
-    // output reg ld_data_p_o,         // -> ld_data_p (datapath)
-    // output reg write_to_mem_o       // -> write_to_mem (datapath)
+    output reg start_flip,          // -> enable (flipper)
+    output reg nm_done_o
 );
 
 reg [4:0] current_state, next_state;
@@ -69,6 +67,7 @@ always @(*)
 begin: enable_signals
     case (current_state)
         S_WAIT_MOVE: begin
+            nm_done_o = 0;
             mv_valid_o = 0;
         end
         S_VALIDATE_U_S: begin
@@ -144,6 +143,7 @@ begin: enable_signals
             start_flip = 0;
         end
         S_FINAL: begin
+        nm_done_o = 1;
             if (dir_status[3] | dir_status[2] | dir_status[1] | dir_status[0]) begin
                 mv_valid_o = 1;
             end
@@ -157,9 +157,10 @@ end // enable_signals
 
 always @(posedge clock)
 begin: state_FFs
-    if(!reset)
+    if(!reset) begin
         dir_status <= 4'b0;
         current_state <= S_WAIT_MOVE;
+    end
     else
         current_state <= next_state;
 end // state_FFS

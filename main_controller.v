@@ -4,6 +4,7 @@ module main_controller(
     input ack,                  // ack for making a valid move
     input clock,
     input reset,
+    input nm_done,
     output reg new_move,        // enable new move controller
     output reg init_start,      // start initialization
     input init_done,
@@ -25,13 +26,13 @@ always @(*)
 begin: state_table 
     case (current_state)
         S_GAME_WELC:  next_state = go ? S_GAME_INIT : S_GAME_WELC;
-        S_GAME_INIT: next_state = init_done ？ S_WAIT_BLACK : S_GAME_INIT；
+        S_GAME_INIT: next_state = init_done ? S_WAIT_BLACK : S_GAME_INIT;
         S_WAIT_BLACK: next_state = go ? S_WB_WAIT : S_WAIT_BLACK; 
         S_WB_WAIT: next_state = go ? S_WB_WAIT : S_WB_VALI_WAIT;
-        S_WB_VALI_WAIT: next_state = ack ? S_WAIT_WHITE : S_WB_VALI_WAIT;
+        S_WB_VALI_WAIT: next_state = nm_done ? (ack ? S_WAIT_WHITE : S_WAIT_BLACK) : S_WB_VALI_WAIT;
         S_WAIT_WHITE: next_state = go ? S_WW_WAIT : S_WAIT_WHITE;
         S_WW_WAIT: next_state = go ? S_WW_WAIT : S_WW_VALI_WAIT;
-        S_WW_VALI_WAIT: next_state = ack ? S_WAIT_BLACK : S_WW_VALI_WAIT;
+        S_WW_VALI_WAIT: next_state = nm_done ? (ack ? S_WAIT_BLACK : S_WAIT_WHITE) : S_WW_VALI_WAIT;
         default:      next_state = S_GAME_WELC;
     endcase
 end // state_table
