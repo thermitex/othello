@@ -20,6 +20,7 @@ wire ld_flip;
 wire enable_flip;
 wire enable_vali;
 wire nm_finish;
+wire step_sign;
 
 wire [6:0] addr_mem_init;
 wire [6:0] addr_mem_vali;
@@ -60,6 +61,7 @@ memorymux mm(
     .vga_ctrl(vga_mem_ctrl),
     .addr_out(addr_final),
     .data_out(data_final),
+    .step_sign_o(step_sign),
     .wren_out(wren_final)
 );
 
@@ -125,6 +127,7 @@ validator vali(
     .addr_out(addr_mem_vali),
     .wren_o(wren_mem_vali),
     .ctrl_mem(vali_mem_ctrl),
+    .step_sign_in(step_sign),
     .data_in(from_mem)
 );
 
@@ -140,6 +143,7 @@ flipper flip(
     .addr_out(addr_mem_flip),
     .wren_o(wren_mem_flip),
     .ctrl_mem(flip_mem_ctrl),
+    .step_sign_in(step_sign),
     .data_out(data_mem_flip),
     .data_in(from_mem)
 );

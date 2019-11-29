@@ -6,6 +6,7 @@ module flipper(
     input [4:0] step_in,            // <- step_o (nm_controller)
     input ld,                       // <- ld_o (nm_controller)
     input enable,                   // <- start_flip (nm_controller)
+    input step_sign_in,
     output reg s_done_o,            // -> s_done (nm_controller)
     output reg [6:0] addr_out,
     output reg wren_o,
@@ -79,8 +80,13 @@ begin: do_stuff
             next_state = S_FLIPPING_WAIT;
         end
         S_FLIPPING_WAIT: begin
-            addr <= addr + step;
-            addr_out = addr + step;
+            if (step_sign_in) begin
+                addr <= addr - step;
+                addr_out = addr - step;
+            end else begin
+                addr <= addr + step;
+                addr_out = addr + step;                
+            end
             count <= count + 1'b1;
             wren_o = 0;
             next_state = S_FLIPPING_READ;

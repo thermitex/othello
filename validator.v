@@ -4,6 +4,7 @@ module validator(
     input [6:0] s_addr_in,          // <- s_addr_out (datapath)
     input player,                   // <- player (main_controller)
     input [4:0] step_in,            // <- step_o (nm_controller)
+    input step_sign_in,
     input ld,                       // <- ld_vali_o (nm_controller)
     input enable,                   // <- start_vali (nm_controller)
     output reg dir_status_o,        // -> dir_status_in (nm_controller)
@@ -24,6 +25,7 @@ reg [2:0] current_state, next_state;
 
 localparam  S_WAIT_EN           = 3'b0,
             S_VALIDATING_S      = 3'b01,
+            S_VALIDATING_BUFF   = 3'b101,
             S_VALIDATING_CD     = 3'b111,
             S_VALIDATING        = 3'b10,
             S_VALI_SUCC         = 3'b11,
@@ -40,7 +42,10 @@ begin: do_stuff
             end
             else begin
                 if (ld) begin
-                    addr <= s_addr_in;
+                    if (step_sign_in)
+                        addr <= s_addr_in - step_in;
+                    else
+                        addr <= s_addr_in + step_in;
                     step <= step_in;
                     data <= player ? 2'b10 : 2'b01;
                 end
@@ -52,19 +57,22 @@ begin: do_stuff
         end
         S_VALIDATING_S: begin
             ctrl_mem = 1;
-            next_state = S_VALIDATING_CD;
+            next_state = S_VALIDATING;
             addr_out = addr;
             wren_o = 0;
         end
-        // check duplicate move
-        S_VALIDATING_CD: begin
-            if (data_in == 2'b00)
-                next_state = S_VALIDATING;
-            else
-                next_state = S_VALI_FAIL;
-            addr <= addr + step;
-            addr_out = addr + step;
+        S_VALIDATING_BUFF: begin
+            next_state = S_VALIDATING;
         end
+        // check duplicate move
+        // S_VALIDATING_CD: begin
+        //     if (data_in == 2'b00)
+        //         next_state = S_VALIDATING;
+        //     else
+        //         next_state = S_VALI_FAIL;
+        //     addr <= addr + step;
+        //     addr_out = addr + step;
+        // end
         S_VALIDATING: begin
             data = data_in;
             if (player == 1'b0) begin
@@ -94,8 +102,13 @@ begin: do_stuff
                     next_state = S_VALI_FAIL;
             end
             count <= count + 1'b1;
-            addr <= addr + step;
-            addr_out = addr + step;
+            if (step_sign_in) begin
+                addr <= addr - step;
+                addr_out = addr - step;
+            end else begin
+                addr <= addr + step;
+                addr_out = addr + step;
+            end
             wren_o = 0;
         end
         S_VALI_FAIL: begin

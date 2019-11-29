@@ -6,6 +6,7 @@ module nm_controller(
     input s_done_flip,              // <- s_done_o (validator)
     input dir_status_in,            // <- dir_status_o (validator)
     output reg [4:0] step_o,        // -> step_in (validator)
+    output reg step_sign_o,
     output reg ld_vali_o,           // -> ld (validator)
     output reg ld_flip_o,           // -> ld (flipper)
     output reg mv_valid_o,          // -> mv_valid_in (datapath)
@@ -40,8 +41,7 @@ localparam  S_WAIT_MOVE         = 5'b0,
 always @(*)
 begin: state_table 
     case (current_state)
-        S_WAIT_MOVE:  next_state = enable ? S_DP_LOAD : S_WAIT_MOVE;
-        S_DP_LOAD: next_state = S_VALIDATE_U;
+        S_WAIT_MOVE:  next_state = enable ? S_VALIDATE_U_Swe : S_WAIT_MOVE;
         S_VALIDATE_U_S:  next_state = S_VALIDATE_U;
         S_VALIDATE_U:  next_state = s_done_vali ? S_VALIDATE_D_S : S_VALIDATE_U;
         S_VALIDATE_D_S:  next_state = S_VALIDATE_D;
@@ -71,7 +71,8 @@ begin: enable_signals
             mv_valid_o = 0;
         end
         S_VALIDATE_U_S: begin
-            step_o = -5'b1010;
+            step_o = 5'b1010;
+            step_sign_o = 1'b1;
             ld_vali_o = 1;
             start_vali = 1;
         end
@@ -82,6 +83,7 @@ begin: enable_signals
         end
         S_VALIDATE_D_S: begin
             step_o = 5'b1010;
+            step_sign_o = 1'b0;
             ld_vali_o = 1;
             start_vali = 1;
         end
@@ -91,7 +93,8 @@ begin: enable_signals
                 dir_status[2] <= dir_status_in;
         end
         S_VALIDATE_L_S: begin
-            step_o = -5'b1;
+            step_o = 5'b1;
+            step_sign_o = 1'b1;
             ld_vali_o = 1;
             start_vali = 1;
         end
@@ -102,6 +105,7 @@ begin: enable_signals
         end
         S_VALIDATE_R_S: begin
             step_o = 5'b1;
+            step_sign_o = 1'b0;
             ld_vali_o = 1;
             start_vali = 1;
         end
@@ -111,7 +115,8 @@ begin: enable_signals
                 dir_status[0] <= dir_status_in;
         end
         S_FLIP_U_S: begin
-            step_o = -5'b1010;
+            step_o = 5'b1010;
+            step_sign_o = 1'b1;
             ld_flip_o = 1;
             start_flip = 1;
         end
@@ -120,6 +125,7 @@ begin: enable_signals
         end
         S_FLIP_D_S: begin
             step_o = 5'b1010;
+            step_sign_o = 1'b0;
             ld_flip_o = 1;
             start_flip = 1;
         end
@@ -127,7 +133,8 @@ begin: enable_signals
             start_flip = 0;
         end
         S_FLIP_L_S: begin
-            step_o = -5'b1;
+            step_o = 5'b1;
+            step_sign_o = 1'b1;
             ld_flip_o = 1;
             start_flip = 1;
         end
@@ -136,6 +143,7 @@ begin: enable_signals
         end
         S_FLIP_R_S: begin
             step_o = 5'b1;
+            step_sign_o = 1'b0;
             ld_flip_o = 1;
             start_flip = 1;
         end
