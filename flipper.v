@@ -8,6 +8,8 @@ module flipper(
     input enable,                   // <- start_flip (nm_controller)
     input step_sign_in,
     input skip_flip_in,
+    input display_done,
+    output reg display_start,
     output reg s_done_o,            // -> s_done (nm_controller)
     output reg [6:0] addr_out,
     output reg wren_o,
@@ -29,7 +31,8 @@ localparam  S_WAIT_EN           = 3'b0,
             S_FLIPPING_READ     = 3'b10,
             S_FLIPPING_WRITE    = 3'b100,
             S_FLIPPING_WAIT     = 3'b101,
-            S_FLIP_OVER         = 3'b11;
+            S_FLIP_DISPLAY      = 3'b11,
+            S_FLIP_OVER         = 3'b110;
 
 always @(posedge clock)
 begin: do_stuff
@@ -94,7 +97,13 @@ begin: do_stuff
             wren_o = 0;
             next_state = S_FLIPPING_READ;
         end
+        S_FLIP_DISPLAY: begin
+            ctrl_mem = 0;
+            display_start = 1;
+            next_state = display_done ? S_FLIP_DISPLAY : S_FLIP_OVER;
+        end
         S_FLIP_OVER: begin
+            display_start = 0;
             s_done_o = 1;
             next_state = S_WAIT_EN;
         end

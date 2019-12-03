@@ -70,6 +70,7 @@ begin: enable_signals
         S_WAIT_MOVE: begin
             nm_done_o = 0;
             mv_valid_o = 0;
+            dir_status <= 4'b0;
         end
         S_VALIDATE_U_S: begin
             step_o = 5'b1010;
@@ -170,10 +171,8 @@ end // enable_signals
 
 always @(posedge clock)
 begin: state_FFs
-    if(!reset) begin
-        dir_status <= 4'b0;
+    if(!reset)
         current_state <= S_WAIT_MOVE;
-    end
     else
         current_state <= next_state;
 end // state_FFS
